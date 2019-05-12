@@ -1,0 +1,983 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<conio.h>
+#include<windows.h>
+#define PI 50
+struct e
+{
+	char a[10];
+	char b[10];
+}z;
+struct f
+{
+	char name[40];
+	char mi[8];
+}stu[PI];
+struct o
+{
+	char a[10];
+}l;
+struct film
+{
+	char ping[20];
+	char name[100];
+	char time[100];
+	char director[100];
+	char date[100];
+	char room[100];
+	float  price;
+	struct film *next;
+};
+struct ding
+{
+	char ren[40];
+	char mi[10];
+	char ping[20];
+	char name[100];
+	char time[100];
+	char director[50];
+	char date[100];
+	char room[100];
+	struct ding *next;
+};
+struct a
+{
+	char b[10];
+}g;
+struct film *h;
+struct ding *t;
+char ch;
+char sh[50];
+int a,n;
+//int select;
+void menu();
+void delet();
+void output(h);
+void guan();
+void jie();
+void tui();
+void error();
+void menu1();
+void save(h);
+void yong();
+void save1(h);
+void find(h);
+void rewrite(h);
+void gou(h);
+void paixu(h);
+void tuipiao();
+void menu2();
+//void save3(t);
+
+
+	
+void rewrite(struct film *h)//影片的更改 
+{
+	int m;
+	char n[20];
+	struct film *p=h;
+	p=p->next;
+	printf("\n请输入要更改影片的名称:");
+	scanf("%s",n);
+	while(strcmp(n,p->name)!=0)
+	{
+		p=p->next;
+		if(p==NULL)
+		{
+			printf("抱歉!内容不存在!!!\n");
+			printf("即将退回管理员界面!!!\n");
+			getchar();
+			getchar();
+			system("cls");
+			menu1();
+		}
+	}
+	printf("请输入更改内容的编号:\n");
+	printf("1,电影名称\n"); 
+	printf("2,影片导演\n");
+	printf("3,放映地点\n"); 
+	printf("4,上映日期\n");
+	printf("5,影片评分\n");
+	printf("6.影片售价\n");
+	scanf("%d",&m);
+	switch(m)
+		{
+			case 1:
+				printf("请输入正确的电影名:");
+				scanf("%s",p->name);
+				break;
+			case 2:
+				printf("请输入正确的导演名:");
+				scanf("%s",p->director);
+				break;
+			case 3:
+				printf("请输入正确的放映地点:");
+				scanf("%s",p->room);
+				break;
+			case 4:
+				printf("请输入正确的上映日期:");
+				scanf("%s",p->date);
+				break;
+			case 5:
+				printf("请输入正确的评分:");
+				scanf("%s",p->ping);
+				break;
+			case 6:
+				printf("请输入正确的价格:");
+				scanf("%f",&p->price);
+				break;
+			default:error();
+		}
+	printf("\n修改完成\n");
+}
+
+void save(struct film *h)
+{
+	struct film *pt;
+	FILE *fp;
+/*	char filename[40];
+	printf("请输入用于保存数据的文件名:\n");
+	scanf("%s",filename);*/
+	
+	if((fp=fopen("abcde.txt","at+"))==NULL)
+	{
+		printf("打开文件失败!\n");
+		getch();
+		exit(1);
+	}
+	for(pt=h->next;pt!=NULL;pt=pt->next)
+	{
+		fprintf(fp,"%s\t%s\t%s\t%s\t%s\t%s\t%f\n",pt->ping,pt->name,pt->director,pt->date,pt->time,pt->room,pt->price);
+	}
+	printf("文件已保存！！！\n");
+	getch();
+	fclose(fp);
+	system("cls");
+	menu1();
+}
+
+void save1(struct film *h)
+{
+	struct film *pt;
+	FILE *fp;
+	if((fp=fopen("abcde.txt","w+"))==NULL)
+	{
+		printf("打开文件失败!\n");
+		getch();
+		exit(1);
+	}
+	for(pt=h->next;pt->next!=NULL;pt=pt->next)
+	{
+		fprintf(fp,"%s\t%s\t%s\t%s\t%s\t%s\t%f\n",pt->ping,pt->name,pt->director,pt->date,pt->time,pt->room,pt->price);
+	}
+	printf("文件已保存！！！\n");
+	getch();
+	fclose(fp);
+	system("cls");
+	menu1();
+}
+
+struct film *read_inf()
+{
+	struct film *h,*r,*stu;
+	FILE *fp;
+	/*char filename[40];
+	printf("请输入要打开的文件名:\n");
+	scanf("%s",filename);*/
+	if((fp=fopen("abcde.txt","rt"))==NULL)
+	{
+		system("cls");
+		printf("\n\n\n\n\n\n\n\n\n\n");
+		printf("\t\t\t\t\t\t\t\t\t\t");
+		printf("抱歉!!!\n\t\t\t\t\t\t\t\t\t\t暂无影片!!!\n");
+		getch();
+		menu();
+	}
+	h=(struct film *)malloc(sizeof(struct film));
+	h->next=NULL;
+	r=h;
+	while(!feof(fp))
+	{
+		stu=(struct film *)malloc(sizeof(struct film));
+		fscanf(fp,"%s\t%s\t%s\t%s\t%s\t%s\t%f",stu->ping,stu->name,stu->director,stu->date,stu->time,stu->room,&stu->price);
+		r->next=stu;
+		r=stu;
+	}
+	r->next=NULL;
+	fclose(fp);
+	printf("\n\t\t\t\t\t\t\t\t\t\t文件中的信息已正确读入!\n");
+	getch();
+	return h;
+}
+
+void paixu(struct film *h)
+{
+	struct film *p,*t,*r;
+	char temp[20];
+	char temp1[100];
+	char temp2[100];
+	char temp3[100];
+	char temp4[100];
+	char temp5[100];
+	float  temp6;
+/*	for(i=0;i<n-1;i++)
+	{
+		k=i;
+		for(j=k+1;j<n;j++)
+		{
+			if(a[k]>a[j])
+			{
+				k=j;
+			}
+		}
+		if(k!=i)
+		{
+			t=a[i];
+			a[i]=a[k];
+			a[k]=t;
+		}
+	}*/
+	for(p=h->next;p->next->next!=NULL;p=p->next)
+	{
+		r=p;
+		for(t=r->next;t->next!=NULL;t=t->next)
+		{
+			if(atoi(r->ping)>atoi(t->ping))
+			{
+				r=t;
+			}
+		}
+			if(r!=p)
+			{
+				strcpy(temp,p->ping);
+				strcpy(p->ping,r->ping);
+				strcpy(r->ping,temp);
+				strcpy(temp1,p->director);
+				strcpy(p->director,r->director);
+				strcpy(r->director,temp1);
+				strcpy(temp2,p->name);
+				strcpy(p->name,r->name);
+				strcpy(r->name,temp2);
+				strcpy(temp3,p->date);
+				strcpy(p->date,r->date);
+				strcpy(r->date,temp3);
+				strcpy(temp4,p->time);
+				strcpy(p->time,r->time);
+				strcpy(r->time,temp4);
+				strcpy(temp5,p->room);
+				strcpy(p->room,r->room);
+				strcpy(r->room,temp5);
+				temp6=p->price;
+				p->price=r->price;
+				r->price=temp6;
+			}
+		}
+	}
+
+void menu()
+{
+	int select;
+	h=(struct film*)malloc(sizeof(struct film));
+	h->next=NULL;
+	system("cls");
+	printf("\n\n\n\n\n\n");
+	printf("\t\t\t\t\t\t\t\t                    影院查询管理系统\n");
+	printf("\t\t\t\t\t			*********************************************************\n");
+	printf("\n");
+	printf("\t\t\t\t\t					|______[1]影片总览______|\n");
+	printf("\t\t\t\t\t					|______[2]影片查询______|\n");
+	printf("\t\t\t\t\t					|______[3]用户登录______|\n");
+	printf("\t\t\t\t\t					|______[4]管理员登录____|\n");
+	printf("\t\t\t\t\t					|______[5]影院介绍______|\n");
+	printf("\t\t\t\t\t					|______[6]退出软件______|\n");
+	printf("\n");
+	printf("\t\t\t\t\t			*********************************************************\n");
+	printf("\t\t\t\t\t                                          请输入你的选项(1--6):");
+	scanf("%d",&select);
+	switch(select)
+	{
+	case 1:
+		h=read_inf();
+		paixu(h);
+		output(h);
+		printf("\n\n\n\n\t\t按Enter键返回管理员菜单!\n");
+		getchar();
+		system("cls");
+		menu();
+		break;
+	case 2:
+		h=read_inf();
+		find(h);
+		break;
+		find();break;
+	case 3:yong();break;
+	case 4:guan();break;
+	case 5:jie();break;
+	case 6:tui();break;
+	default:error();break;
+	}
+}
+struct film *create()
+{
+	struct film *r,*stu;
+	struct film *h;
+	int i=0;
+	char choice;
+	h=(struct film*)malloc(sizeof(struct film));
+	h->next=NULL;
+	r=h;
+	do
+	{
+		stu=(struct film*)malloc(sizeof(struct film));
+		printf("\n\n\n\n");
+		printf("\n第%d个影片的信息:\n",++i);
+		printf("\n猫眼评分:\n");
+		scanf("%s",stu->ping);
+		printf("\n影片名称:\n");
+		scanf("%s",stu->name);
+		printf("\n影片导演:\n");
+		scanf("%s",stu->director);
+		printf("\n上映日期:\n");
+		scanf("%s",stu->date);
+		printf("\n放映时长:\n");
+		scanf("%s",stu->time);
+		printf("\n放映地点:\n");
+		scanf("%s",stu->room);
+		printf("\n影片价格\n");
+		scanf("%f",&stu->price);
+		r->next=stu;
+		r=stu;
+		printf("continue?(Y/N)");
+		choice=getche();
+	}while(choice=='Y'||choice=='y');
+	r->next=NULL;
+	return(h);
+}
+void output(struct film *h)
+{
+	struct film *stu;
+	system("cls");
+	printf("\t\t------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+	printf("\t\t猫眼评分\t\t影片片名\t\t导演姓名\t\t上映日期\t\t播放时长\t\t\t放映地点\t\t电影票价\n");
+	printf("\t\t------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+	for(stu=h->next;stu->next!=NULL;stu=stu->next)
+	{
+		printf("\t\t猫眼评分:%s\t\t影片片名:%s\t影片导演:%s\t\t上映日期:%s\t\t播放时长:%s\t\t放映地点:%s\t\t电影票价:%.2f\n",stu->ping,stu->name,stu->director,stu->date,stu->time,stu->room,stu->price);
+		printf("\t\t------------------------------------------------------------------------------------------------------------------------------------------------------------------\t\n");
+	}
+	getchar();
+}
+/*void output(struct film *h)
+{
+	struct film *stu;
+	system("cls");
+	for(stu=h->next;stu->next!=NULL;stu=stu->next)
+	{
+		printf("评分:\n");
+		printf("%s\n",stu->ping);
+	}
+	getchar();
+}*/
+void jie()
+{
+	system("cls");
+	printf("\n\n\n\t3G影院!!!\n");
+	getch();
+	menu();
+}
+void guan()
+{
+	int i=0,t=0,j=0;
+	char s[100],d[100];
+	FILE *p;
+	if((p=fopen("t.txt","r+"))==NULL)
+	{
+		p=fopen("t.txt","w+");
+		t=1;
+	}
+	if(t==1)
+	{
+		system("cls");
+		printf("\n\n\n");
+		printf("\t\t\t\t\t\t\t\t\t\t当前无管理员!!!\n");
+		printf("\t\t\t\t\t\t\t\t\t\t请输入注册的管理员用户名:\n");
+		printf("\t\t\t\t\t\t\t\t\t\t");
+		scanf("%s",s);
+		printf("\t\t\t\t\t\t\t\t\t\t请设置管理员密码:(按空格键结束!!!)\n");
+		printf("\t\t\t\t\t\t\t\t\t\t");
+		//scanf("%s",d);
+		while(d[i]!=' ')
+		{
+			i=i+1;
+			d[i]=getch();
+			printf("%c",d[i]);
+		}
+		d[i]='\0';
+		strcpy(z.a,s);
+		strcpy(z.b,d);
+		fprintf(p,"%s %s",z.a,z.b);
+		fclose(p);
+		menu();
+	}
+	if(t==0)
+	{
+		system("cls");
+		printf("\n\n\n\n\n\n\n\n\n\n\n");
+		printf("\t\t\t\t\t\t\t\t\t\t请输入用户名:\n");
+		printf("\t\t\t\t\t\t\t\t\t\t");
+		scanf("%s",s);
+		fscanf(p,"%s %s",z.a,z.b);
+		fclose(p);
+		if(!strcmp(z.a,s))
+		{
+			printf("\t\t\t\t\t\t\t\t\t\t请输入密码:(按空格键结束)\n");
+			printf("\t\t\t\t\t\t\t\t\t\t");
+			while(d[j]!=' ')//加密
+			{
+				j=j+1;
+				d[j]=getch();
+				printf("*");
+				//j=j+1;
+			}
+			d[j]='\0';
+			getchar();
+			if(!strcmp(z.b,d))
+			{
+				printf("\n\t\t\t\t\t\t\t\t\t\t密码输入正确!!!\n");
+				printf("\n\t\t\t\t\t\t\t\t\t\t即将进入管理员界面!\n");
+				getchar();
+				system("cls");
+				menu1();
+			}
+			else
+			{
+				system("cls");
+				printf("\n\n\n\n\n\n\n\n\n\n");
+				printf("\t\t\t\t\t\t\t\t\t\t密码输入错误!\n");
+				printf("\t\t\t\t\t\t\t\t\t\t即将返回主页面!\n");
+				getchar();
+				menu();
+			}
+		}
+		else
+		{
+			system("cls");
+			printf("\n\n\n\n\n\n\n\n\n\n");
+			printf("\t\t\t\t\t\t\t\t\t\t用户名错误!\n");
+			getchar();
+			getchar();
+			menu();
+		}
+		fclose(p);
+	}
+}
+void menu1()
+{
+	
+	h=(struct film*)malloc(sizeof(struct film));
+	h->next=NULL;
+	printf("\n\n\n\n\n\n");
+	printf("\t\t\t\t\t\t\t\t\t----------------------------------------\t\n");
+	printf("\t\t\t\t\t\t\t\t\t|       欢迎使用影院信息管理系统       |\t\n");
+	printf("\t\t\t\t\t\t\t\t\t----------------------------------------\t\n");
+	printf("\t\t\t\t\t\t\t\t\t|          1,录入影片信息              |\t\n");
+	printf("\t\t\t\t\t\t\t\t\t|          2,修改影片信息              |\t\n");
+	printf("\t\t\t\t\t\t\t\t\t|          3,删除影片信息              |\t\n");
+	printf("\t\t\t\t\t\t\t\t\t|          4,显示所有影片              |\t\n");
+	printf("\t\t\t\t\t\t\t\t\t|          0,退出登录                  |\t\n");
+	printf("\t\t\t\t\t\t\t\t\t----------------------------------------\t\n");
+	printf("\n");
+	scanf("%d",&a);
+	system("cls");
+	switch(a)
+	{
+	case 1:
+		//	h=read_inf();
+			h=create();
+			//paixu(h);
+			save(h);
+			break;
+	case 2:
+	 h=read_inf();
+		rewrite(h);
+		save1(h);
+		break;
+	case 3:
+		h=read_inf();
+		delet(h);
+		save1(h);
+		break;
+	case 4:
+		h=read_inf();
+		paixu(h);
+		output(h);
+		printf("\n按Enter键返回管理员菜单!\n");
+		getchar();
+		system("cls");
+		menu1();
+		break;
+	case 0:
+		printf("即将退出管理员登录!!!\n");
+		menu();
+	default :error();break;
+	}
+}
+
+void delet(struct film *h)
+{
+	struct film *p=h;
+	struct film *t;
+	char a[30];
+	printf("请输入需要删除的影片片名:\n");
+	scanf("%s",a);
+	while(strcmp(a,p->name)!=0)
+	{
+		t=p;
+		p=p->next;
+		if(p==NULL)
+		{
+			printf("未找到该影片!\n按Enter键返回管理员主页!!!\n");
+			getchar();
+			getchar();
+			system("cls");
+			menu1();
+		}
+	}
+	t->next=p->next;
+	printf("删除成功!\n");
+	free(p);
+}
+void yong()
+{
+	FILE *fp,*t,*p;
+	int i,j=0;
+	char filename[40];
+	char d[10];
+	char f[10];
+	system("cls");
+	printf("请输入用户名:\n");
+	scanf("%s",filename);
+	fp=fopen("www.txt","at+");
+	if(fp==NULL)
+	{
+		printf("打开文件失败!\n");
+	}
+	while(fscanf(fp,"%s",stu[j].name)!=EOF)
+	{
+		if(strcmp(stu[j].name,filename)==0)
+		{
+			p=fopen("stu[j].name","at+");
+			printf("请输入8位数用户密码:\n");
+			for(i=0;i<8;i++)
+			{
+				d[i]=getch();
+				printf("*");
+			}
+			d[i]='\0';
+			getchar();
+			if(strcmp(stu[j].mi,d)==0)
+			{
+				printf("密码输入正确!\n");
+				printf("即将进入用户%s的界面",stu[j].name);
+				getchar();
+				system("cls");
+				menu2();
+				strcpy(sh,stu[j].name);
+			//进入用户界面
+			//进行购票，退票，查询操作
+			}
+			else
+			{
+				printf("密码输入错误!\n");
+				printf("即将返回主页面!\n");
+				getchar();
+				menu();
+			}
+		}
+		else
+		{
+			j+=1;
+		}
+	}
+	strcpy(stu[j].name,filename);
+	fprintf(fp,"%s\n",stu[j].name);
+	fclose(fp);
+	t=fopen(stu[j].name,"at+");
+	if(t==NULL)
+	{
+		printf("打开文件失败!\n");
+	}
+	printf("请输入需要注册的8位数密码:\n");
+	//scanf("%s",stu[j].mi);
+	for(i=0;i<8;i++)
+	{
+		f[i]=getch();
+		printf("%c",f[i]);
+	}
+	f[i]='\0';
+	strcpy(stu[j].mi,f);
+	fprintf(t,"%s\n",stu[j].mi);
+	fclose(t);
+	printf("注册成功!\n");
+	printf("即将返回主菜单!\n");
+	getchar();
+	menu();
+}
+
+	//加入密码;写入此文件；
+	//返回主菜单
+	//输入用户名，密码，进入用户界面；
+	//进行买票·退票·查询操作；
+/*void yong()
+{
+	int t=0,i;
+	char d[10];
+	FILE *p;
+	char filenames[50][30];
+	system("cls");
+	printf("请输入用户名:\n");
+	for(i=0;i<50;)
+	scanf("%s",filenames[i]);
+	if((p=fopen("filenames","rt"))==NULL)
+	{
+	
+		t=1;
+	}
+	if(t==1)
+	{
+		p=fopen("filenames","w+");
+		system("cls");
+		printf("当前无此用户!!!\n");
+		printf("请设置8位数密码:\n");
+		scanf("%s",d);
+		strcpy(g.b,d);
+		fprintf(p,"%s",g.b);
+		fclose(p);
+		menu();
+	}
+	if(t==0)
+	{
+		system("cls");
+		fscanf(p,"%s",g.b);
+		fclose(p);
+		printf("请输入密码:\n");
+		for(i=0;i<8;i++)
+		{
+			d[i]=getch();
+			printf("*");
+		}
+		d[i]='\0';
+		getchar();
+		if(!strcmp(g.b,d))
+			{
+				printf("密码输入正确!!!\n");
+				printf("即将进入用户界面！\n");
+				getchar();
+				system("cls");
+				menu2();
+			}
+			else
+			{
+				printf("密码输入错误!\n");
+				printf("即将返回主页面!\n");
+				getchar();
+				menu();
+			}
+		fclose(p);
+	}
+}*/
+
+/*void delet(struct film *h)
+{
+	struct film *p,*t;
+	int j=0;
+	char a[30];
+	printf("请输入需要删除的影片片名:\n");
+	scanf("%s",a);
+	if(h->next==NULL)
+	{
+		printf("暂无影片信息，请先存入!!!\n");
+		return;
+	}
+	p=h;
+	t=p->next;
+	while(t)
+	{
+		if(strcmp(t->name,a)==0)
+		{
+			j=1;
+			p->next=t->next;
+			free(t);
+			free(p);
+			printf("删除成功!\n");
+			break;
+		}
+		p=t;
+		t=t->next;
+	}
+	if(j==0)
+	{
+		printf("影片不存在!\n");
+		getchar();
+		menu1();
+	}
+}*/
+
+void tui()
+{
+	int a;
+	system("cls");
+	printf("\n\n\n\n                                            是否确认退出???\n\n\n");
+	printf("                                             确认:0,取消:1\n");
+	scanf("%d",&a);
+	switch(a)
+	{
+	case 0:exit(0);
+	case 1:menu();
+	default:{
+				system("cls");
+				printf("\n\n\n\n\n\n                                              无效的输入！！！\n");
+				printf("\n\n\n\n                                              按enter键返回主菜单\n");
+				getchar();
+				getchar();
+				menu();
+			}
+	}
+}
+void error()
+{
+ system("cls"); //清屏
+ printf("输入有误，选择的范围是1--6:\n");
+ printf("\n按回车键继续……\n");
+ getchar();
+ getchar();
+ system("cls"); //清屏
+ menu();
+}
+void find(struct film *h)
+{
+	int i;
+	char m[50];
+	char n[50];
+	struct film *q,*p;
+	//printf("成功");
+	q=h;
+	p=h;
+	system("cls");
+	printf("-------------------------------\n");
+	printf("\t1.按电影名查找\n");
+	printf("\t2.按导演名查找\n");
+	printf("-------------------------------\n");
+	printf("\n\n\t请输入对应查找方式的数字:\n");
+	scanf("%d",&i);
+	if(i==1)
+	{
+		system("cls");
+		printf("请输入您需查找的电影名:\n");
+		scanf("%s",m);
+		while(q!=NULL&&strcmp(q->name,m)!=0)
+		{
+			q=q->next;
+		}
+		if(q==NULL)
+		{
+			system("cls");
+			getchar();
+			printf("该电影不存在!!!\n");
+			printf("按enter键返回主页面!!!\n");
+			getchar();
+			menu();
+		}	
+		else
+		{
+				system("cls");
+				printf("\t\t------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+				printf("\t\t猫眼评分\t\t影片片名\t\t导演姓名\t\t上映日期\t\t播放时长\t\t放映地点\t\t电影票价\n");
+				printf("\t\t------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+				printf("\t\t猫眼评分:%s,\t\t影片片名:%s,\t影片导演:%s,\t\t上映日期:%s,\t\t播放时长:%s,\t\t放映地点:%s,\t\t电影票价:%f",q->ping,q->name,q->director,q->date,q->time,q->room,q->price);
+				getchar();
+		}
+		getchar();
+		menu();
+	}
+	else
+	{
+		system("cls");
+		printf("请输入您需查找的电影导演的名字:\n");
+		scanf("%s",&n);
+		while(p!=NULL&&strcmp(p->director,n)!=0)
+		{
+			p=p->next;
+		}
+		if(p==NULL)
+		{
+			printf("该电影不存在!!!\n");
+			printf("按enter键返回主页面!!!\n");
+			getchar();
+			menu();
+		}	
+		else
+		{
+				system("cls");
+				printf("\t\t------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+				printf("\t\t猫眼评分\t\t影片片名\t\t导演姓名\t\t上映日期\t\t播放时长\t\t放映地点\t\t电影票价\n");
+				printf("\t\t------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+				printf("\t\t猫眼评分:%s,\t\t影片片名:%s,\t影片导演:%s,\t\t上映日期:%s,\t播放时长:%s,\t\t放映地点:%s,\t\t电影票价:%.2f\t",p->ping,p->name,p->director,p->date,p->time,p->room,p->price);
+				getchar();
+		}
+		getchar();
+		menu();
+	}
+}
+void main()
+{
+	menu();
+}
+void menu2()
+{
+	int k;
+	system("cls");
+	printf("----------------------------------------\n");
+	printf("\t\t1.购票\n");
+	printf("\t\t2.退票\n");
+	printf("\t\t0.退出\n");
+	printf("----------------------------------------\n");
+	printf("\n\n\n\t请输入所选序号:\n");
+	scanf("%d",&k);
+	getchar();
+	switch(k)
+	{
+	case 1:
+		h=read_inf();
+		gou(h);
+	//	save3();break;
+	case 2:
+		tuipiao();break;
+	case 0:
+		menu();break;
+	default:
+		error();break;
+	}
+}
+void tuipiao()
+{
+	printf("退票\n");
+	getchar();
+	menu();
+}
+void gou(struct film *h)
+{
+	printf("购票\n");
+	getchar();
+	menu();
+}
+/*	system("cls");
+	char dian[50];
+	char bookname[50];
+	char z;
+	struct ding *t;
+	struct film *p;	
+	p=h->next;
+	t=(struct ding*)malloc(sizeof(struct ding));
+	t=t->next;
+	printf("请输入订票人的姓名:\n");
+	scanf("%s",bookname);
+	printf("请输入订票电影名称:\n");
+	scanf("%s",dian);
+	while(p!=NULL)
+	{
+		if(!strcmp(dian,p->name))
+		{
+			getchar();
+			printf("是否订票(Y/N)\n");
+			scanf("%c",&z);
+			getchar();
+			if(z=='Y')
+			{
+				printf("正在办理订票...\n");
+				strcpy(t->ren,bookname);
+				strcpy(t->name,p->name);
+				strcpy(t->director,p->director);
+				strcpy(t->date,p->date);
+				strcpy(t->ping,p->ping);
+				strcpy(t->room,p->room);
+				strcpy(t->time,p->time);
+				printf("办理业务成功!!!\n");
+				printf("订票成功!!!\n");
+			}
+			else
+			{
+				menu();
+			}
+		}
+		else
+		{
+			p=p->next;
+		}
+	}
+	if(p==NULL)
+	{
+		printf("抱歉!!!输入错误，不存在本片!!!\n");
+		printf("即将返回主页面!!!\n");
+		getchar();
+		menu();
+	}
+}
+void save3(struct ding *t)
+{
+	struct ding *pt;
+	FILE *fp;	
+	if((fp=fopen("ding.txt","at+"))==NULL)
+	{
+		printf("打开文件失败!\n");
+		getch();
+		exit(1);
+	}
+	for(pt=t->next;pt!=NULL;pt=pt->next)
+	{
+		fprintf(fp,"%s %s %s %s %s %s %s\n",pt->ren,pt->ping,pt->name,pt->director,pt->date,pt->time,pt->room);
+	}
+	printf("文件已保存！！！\n");
+	getch();
+	fclose(fp);
+	system("cls");
+	menu();
+}*/
+
+
+
+
+
+/*void save3(struct film *h)
+{
+	struct film *pt=h->next;
+	FILE *fp;
+	if((fp=fopen(stu[j].name,"at+"))==NULL)
+	{
+		printf("打开文件失败!\n");
+		getch();
+		exit(1);
+	}
+	fprintf(fp,"%s,%s,%s,%s,%s,%s,%d\n",pt->ping,pt->name,pt->director,pt->date,pt->time,pt->room,pt->price);
+	printf("文件已保存!!!\n");
+	getch();
+	fclose(fp);
+	system("cls");
+	menu2();
+}*/
+/*void yong()
+{
+	struct ding *y,*r;
+	struct film *h;
+	char names[30];
+	printf("请输入用户名:\n");
+	scanf("%s",names);
+	while(h!=NULL)
+	{
+		if(strcmp(h->name,names))
+		{*/
+			
+
+
+
